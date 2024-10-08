@@ -3,7 +3,8 @@ const lookAheadBufferLen = 4;
 const searchBufferLen = windowLen - lookAheadBufferLen;
 /** @param {string} input */
 exports.lz77 = function lz77(input) {
-  const result = [];
+  const compressedArray = [];
+  let compressedStr = "";
   /* @type {string} searchBuffer */
   let cutoffCount = 0;
   let searchBuffer = "";
@@ -50,7 +51,19 @@ exports.lz77 = function lz77(input) {
       }
     } while (true);
     if (offset !== 0) {
-      result.push({ chars: input.slice(i, i + length), offset, length });
+      compressedArray.push({
+        chars: input.slice(i, i + length),
+        offset,
+        length,
+      });
+      if (length > 2) {
+        compressedStr += offset;
+        compressedStr += length;
+      } else {
+        compressedStr += input.slice(i, i + length);
+      }
+    } else {
+      compressedStr += input.slice(i, i + length);
     }
     searchBuffer = searchBuffer.concat(input.slice(i, i + length));
     if (searchBuffer.length > searchBufferLen) {
@@ -58,5 +71,6 @@ exports.lz77 = function lz77(input) {
       searchBuffer = searchBuffer.slice(searchBuffer.length - searchBufferLen);
     }
   }
-  return result;
+
+  return { input, output: compressedStr, compressedArray };
 };

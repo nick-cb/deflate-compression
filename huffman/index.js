@@ -13,9 +13,9 @@ const util = require("util");
 const str = "this is an example of a huffman tree";
 
 /** @param {string} str */
-function compress(str) {
+function createHuffmanTree(str) {
   // I need to know how many symbols are there and what is their freq
-  /** @type {Array<{freq: number}>} */
+  /** @type {Array<{freq: number, value: string}>} */
   const arr = new Array();
   let lastIdx = 0;
   for (const c of str) {
@@ -73,24 +73,26 @@ function compress(str) {
       right,
     };
     queue.push(node);
-    console.log("");
   } while (queue1.length || queue.length > 1);
-  label(queue[0]);
+
+  return { root: queue[0], freqArr: arr, codes: label(queue[0]) };
 }
 
 /** @param {HuffNode} node */
 function label(node) {
+  const result = [];
   if (node.right) {
     node.right.code = (node.code || "") + "1";
-    label(node.right);
+    result.push(...label(node.right));
   }
   if (node.left) {
     node.left.code = (node.code || "") + "0";
-    label(node.left);
+    result.push(...label(node.left));
   }
   if (!node.right || !node.left) {
-    console.log({ value: node.value, code: node.code });
+    result.push({ value: node.value, code: node.code });
   }
+  return result;
 }
 
 /** @param {HuffNode} node */
@@ -132,4 +134,17 @@ function partition(nodes, low, high) {
   } while (true);
 }
 
-compress(str);
+createHuffmanTree(str);
+
+/** @param {string} str */
+function encode(str) {
+  const { codes, freqArr } = createHuffmanTree(str);
+  let encodedStr = "";
+  for (const c of str) {
+    const item = codes.find((code) => code.value === c);
+    encodedStr += item.code;
+  }
+  return encodedStr;
+}
+
+exports.encode = encode;
