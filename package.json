@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test": "node --inspect --watch --test test/"
+  },
   "dependencies": {
     "@types/node": "^22.7.4"
   }
