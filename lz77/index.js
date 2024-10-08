@@ -1,9 +1,3 @@
-/*
- * d: distance to start of the match
- * l: length of match
- * c: char following match in input
- */
-
 const windowLen = 15;
 const lookAheadBufferLen = 4;
 const searchBufferLen = windowLen - lookAheadBufferLen;
@@ -35,6 +29,10 @@ exports.lz77 = function lz77(input) {
           offset = i - j - cutoffCount;
         }
         length += 1;
+        if (length > lookAheadBufferLen) {
+          length -= 1;
+          break;
+        }
         j += 1;
       } else {
         if (offset !== 0) {
